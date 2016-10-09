@@ -1,0 +1,106 @@
+<!-- index.html -->
+<!-- JS + Redux + jasmine -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Jasmine Spec Runner v2.5.2</title>
+
+  <link rel="shortcut icon" type="image/png" href="lib/jasmine-2.5.2/jasmine_favicon.png">
+  <link rel="stylesheet" href="lib/jasmine-2.5.2/jasmine.css">
+
+  <script src="lib/jasmine-2.5.2/jasmine.js"></script>
+  <script src="lib/jasmine-2.5.2/jasmine-html.js"></script>
+  <script src="lib/jasmine-2.5.2/boot.js"></script>
+</head>
+<body>
+  <p>Implement the redux createStore class basic features instead</p>
+  <p id="demo"></p>
+
+  <script>
+  //set id demo to contain "Hello Worrld!"
+    const createStore = (reducer) => {
+      let state;
+      let listeners = [];
+
+      const getState = () => state;
+
+      const dispatch = (action) => {
+          state = reducer(state, action);
+          listeners.forEach(listener => listener());
+      };
+
+      const subscribe = (listener) => {
+          listeners.push(listener);
+          return () => {
+            listeners = listeners.filter(l => l !== listener);
+          };
+      };
+
+      dispatch({}); // 5
+
+      return { getState, dispatch, subscribe };
+    };
+
+    const counter = (state = 0, action) => {
+      switch (action.type) {
+        case 'INCREMENT':
+          return state + 1;
+        case 'DECREMENT':
+          return state - 1;
+        default:
+          return state;
+      }
+    }
+
+    const store = createStore(counter);
+
+    const render = () => {
+      document.getElementById('demo').innerHTML = document.getElementById('demo').innerHTML + " " + store.getState();
+    };
+
+    store.subscribe(render);
+    render();
+
+    document.addEventListener('click', () => {
+      store.dispatch({ type: 'INCREMENT' });
+    });
+
+    describe("Hello world test suite", function() {
+        it("This should pass!", function() {
+            var state;
+            state = counter(0, { type: 'INCREMENT' })
+            expect(state).toEqual(1);
+//            console.log(state);
+            document.getElementById('demo').innerHTML = document.getElementById('demo').innerHTML + state;
+
+            state = counter(1, { type: 'INCREMENT' })
+            expect(state).toEqual(2);
+//            console.log(state);
+            document.getElementById('demo').innerHTML = document.getElementById('demo').innerHTML + state;
+
+            state = counter(2, { type: 'DECREMENT' })
+            expect(state).toEqual(1);
+//            console.log(state);
+document.getElementById('demo').innerHTML = document.getElementById('demo').innerHTML + state;
+
+            state = counter(1, { type: 'DECREMENT' })
+            expect(state).toEqual(0);
+//            console.log(state);
+document.getElementById('demo').innerHTML = document.getElementById('demo').innerHTML + state;
+
+            state = counter(1, { type: 'SOMETHING_ELSE' })
+            expect(state).toEqual(1);
+//            console.log(state);
+document.getElementById('demo').innerHTML = document.getElementById('demo').innerHTML + state;
+
+            state = counter(undefined, {});
+            expect(state).toEqual(0);
+//            console.log(state);
+document.getElementById('demo').innerHTML = document.getElementById('demo').innerHTML + state;
+          });
+        });
+  </script>
+
+</body>
+</html>
